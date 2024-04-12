@@ -10,6 +10,10 @@
   <name>Quarkus Reactive 10k steps challenge</name>
   <packaging>pom</packaging>
 
+  <modules>
+    <module>activity-service</module>
+  </modules>
+
   <properties>
     <compiler-plugin.version>3.12.1</compiler-plugin.version>
     <maven.compiler.release>21</maven.compiler.release>
