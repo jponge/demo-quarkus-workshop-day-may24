@@ -1,21 +1,29 @@
 package demo.quarkus.reactive;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.vertx.core.json.JsonObject;
+import io.vertx.mutiny.pgclient.PgPool;
+import jakarta.inject.Inject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusTest
 class DeviceResourceTest {
+
+  @Inject
+  PgPool pgPool;
+
+  @BeforeEach
+  void setUp() {
+    // FIXME - setup db
+  }
+
   @Test
   void testHelloEndpoint() {
     given()
       .when().get("/device/uuid-string/total")
       .then()
-      .statusCode(200)
-      .body(is(new JsonObject().toString()));
+      .statusCode(404);
   }
-
 }

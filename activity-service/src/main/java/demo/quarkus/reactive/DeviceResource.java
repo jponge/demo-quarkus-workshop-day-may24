@@ -1,41 +1,70 @@
 package demo.quarkus.reactive;
 
+import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
+import io.vertx.mutiny.sqlclient.Tuple;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.jboss.resteasy.reactive.RestResponse;
 
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+
 @Path("device")
 public class DeviceResource {
+
+  @Inject
+  PgPool pgPool;
 
   @Path("{deviceId}/total")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public JsonObject total(String deviceId) {
-    // FIXME
-    return new JsonObject();
+  public Uni<RestResponse<JsonObject>> total(String deviceId) {
+    Tuple params = Tuple.of(deviceId);
+    return pgPool.preparedQuery(SqlQueries.totalStepsCount())
+      .execute(params)
+      .onItem().transform(DeviceResource::countResponse);
   }
 
   @Path("{deviceId}/{year}/{month}")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public JsonObject stepsOnMonth(String deviceId, int year, int month) {
-    // FIXME
-    return new JsonObject();
+  public Uni<RestResponse<JsonObject>> stepsOnMonth(String deviceId, int year, int month) {
+    try {
+      LocalDateTime dateTime = LocalDateTime.of(year, month, 1, 0, 0);
+      Tuple params = Tuple.of(deviceId, dateTime);
+      return pgPool.preparedQuery(SqlQueries.monthlyStepsCount())
+        .execute(params)
+        .onItem().transform(DeviceResource::countResponse);
+    } catch (DateTimeException | NumberFormatException e) {
+      throw new BadRequestException(e);
+    }
   }
 
   @Path("{deviceId}/{year}/{month}/{day}")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public JsonObject stepsOnDay(String deviceId, int year, int month, int day) {
-    // FIXME
-    return new JsonObject();
+  public Uni<RestResponse<JsonObject>> stepsOnDay(String deviceId, int year, int month, int day) {
+    try {
+      LocalDateTime dateTime = LocalDateTime.of(year, month, day, 0, 0);
+      Tuple params = Tuple.of(deviceId, dateTime);
+      return pgPool.preparedQuery(SqlQueries.dailyStepsCount())
+        .execute(params)
+        .onItem().transform(DeviceResource::countResponse);
+    } catch (DateTimeException | NumberFormatException e) {
+      throw new BadRequestException(e);
+    }
   }
 
-  private RestResponse<JsonObject> countResponse(Row row) {
+  private static RestResponse<JsonObject> countResponse(RowSet<Row> rs) {
+    Row row = rs.iterator().next();
     Integer count = row.getInteger(0);
     if (count != null) {
       JsonObject payload = new JsonObject()
