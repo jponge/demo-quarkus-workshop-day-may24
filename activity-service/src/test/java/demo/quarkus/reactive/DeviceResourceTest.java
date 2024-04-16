@@ -22,7 +22,8 @@ class DeviceResourceTest {
 
   @BeforeEach
   void prepareDb() {
-    TestDbSetup.execute(pgPool);
+    TestDbSetup.cleanDb(pgPool);
+    TestDbSetup.insertTestData(pgPool);
   }
 
   @Test

@@ -9,7 +9,13 @@ import java.util.List;
 
 class TestDbSetup {
 
-  static void execute(PgPool pgPool) {
+  static void cleanDb(PgPool pgPool) {
+    pgPool.query("TRUNCATE TABLE stepevent").execute()
+      .await()
+      .indefinitely();
+  }
+
+  static void insertTestData(PgPool pgPool) {
     LocalDateTime now = LocalDateTime.now();
     List<Tuple> data = Arrays.asList(
       Tuple.of("123", 1, LocalDateTime.of(2023, 4, 1, 23, 0), 6541),
@@ -23,8 +29,7 @@ class TestDbSetup {
       Tuple.of("abc", 2, now, 1500)
     );
 
-    pgPool.query("TRUNCATE TABLE stepevent").execute()
-      .chain(() -> pgPool.preparedQuery("INSERT INTO stepevent VALUES($1, $2, $3::timestamp, $4)").executeBatch(data))
+    pgPool.preparedQuery("INSERT INTO stepevent VALUES($1, $2, $3::timestamp, $4)").executeBatch(data)
       .await()
       .indefinitely();
   }

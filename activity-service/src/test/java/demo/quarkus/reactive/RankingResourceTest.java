@@ -25,7 +25,8 @@ class RankingResourceTest {
 
   @BeforeEach
   void prepareDb() {
-    TestDbSetup.execute(pgPool);
+    TestDbSetup.cleanDb(pgPool);
+    TestDbSetup.insertTestData(pgPool);
   }
 
   @Test
