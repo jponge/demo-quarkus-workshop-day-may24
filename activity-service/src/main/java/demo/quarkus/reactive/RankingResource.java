@@ -12,12 +12,13 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+@Path("/ranking")
 public class RankingResource {
 
   @Inject
   PgPool pgPool;
 
-  @Path("/ranking-last-24-hours")
+  @Path("/last-24-hours")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Uni<JsonArray> ranking() {
