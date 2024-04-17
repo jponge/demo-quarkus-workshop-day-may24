@@ -12,6 +12,7 @@
 
   <modules>
     <module>activity-service</module>
+    <module>user-profile-service</module>
   </modules>
 
   <properties>
