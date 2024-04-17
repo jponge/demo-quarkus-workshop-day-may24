@@ -1,4 +1,4 @@
-package demo.quarkus.reactive;
+package demo.quarkus.reactive.activity;
 
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.JsonArray;

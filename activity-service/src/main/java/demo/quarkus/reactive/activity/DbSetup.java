@@ -1,4 +1,4 @@
-package demo.quarkus.reactive;
+package demo.quarkus.reactive.activity;
 
 import io.quarkus.runtime.StartupEvent;
 import io.vertx.mutiny.pgclient.PgPool;

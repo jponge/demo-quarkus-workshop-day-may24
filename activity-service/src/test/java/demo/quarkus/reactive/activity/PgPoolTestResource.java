@@ -1,4 +1,4 @@
-package demo.quarkus.reactive;
+package demo.quarkus.reactive.activity;
 
 import io.quarkus.test.common.DevServicesContext;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;

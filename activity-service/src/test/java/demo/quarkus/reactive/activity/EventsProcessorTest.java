@@ -1,4 +1,4 @@
-package demo.quarkus.reactive;
+package demo.quarkus.reactive.activity;
 
 import io.quarkus.kafka.client.serialization.JsonObjectSerde;
 import io.quarkus.test.common.QuarkusTestResource;

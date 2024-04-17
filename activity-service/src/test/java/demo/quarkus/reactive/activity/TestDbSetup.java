@@ -1,4 +1,4 @@
-package demo.quarkus.reactive;
+package demo.quarkus.reactive.activity;
 
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Tuple;
