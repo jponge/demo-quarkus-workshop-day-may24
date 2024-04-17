@@ -32,6 +32,7 @@ class EventsProcessorTest {
   void setUp() {
     TestDbSetup.cleanDb(pgPool);
     companion.registerSerde(JsonObject.class, new JsonObjectSerde());
+    companion.getOrCreateAdminClient().deleteTopics(List.of("incoming.steps", "daily.step.updates"));
   }
 
   @Test
@@ -45,7 +46,31 @@ class EventsProcessorTest {
       new ProducerRecord<>("incoming.steps", new JsonObject()
         .put("deviceId", "123")
         .put("deviceSync", 2L)
-        .put("stepsCount", 50))
+        .put("stepsCount", 200))
+    ));
+
+    List<ConsumerRecord<String, JsonObject>> records = companion.consume(JsonObject.class)
+      .fromTopics("daily.step.updates", 1)
+      .awaitCompletion()
+      .getRecords();
+    JsonObject last = records.get(0).value();
+    assertThat(last.getString("deviceId")).isEqualTo("123");
+    assertThat(last.containsKey("timestamp")).isTrue();
+    assertThat(last.getInteger("stepsCount")).isEqualTo(200);
+  }
+
+  @Test
+  @DisplayName("Send same event from the same device, and observe that a correct daily steps count event is being produced")
+  void observeDailyStepsCountDuplicateEvent() {
+    companion.produce(JsonObject.class).fromRecords(List.of(
+      new ProducerRecord<>("incoming.steps", new JsonObject()
+        .put("deviceId", "123")
+        .put("deviceSync", 1L)
+        .put("stepsCount", 200)),
+      new ProducerRecord<>("incoming.steps", new JsonObject()
+        .put("deviceId", "123")
+        .put("deviceSync", 1L)
+        .put("stepsCount", 200))
     ));
 
     List<ConsumerRecord<String, JsonObject>> records = companion.consume(JsonObject.class)
@@ -55,6 +80,6 @@ class EventsProcessorTest {
     JsonObject last = records.get(1).value();
     assertThat(last.getString("deviceId")).isEqualTo("123");
     assertThat(last.containsKey("timestamp")).isTrue();
-    assertThat(last.getInteger("stepsCount")).isEqualTo(250);
+    assertThat(last.getInteger("stepsCount")).isEqualTo(200);
   }
 }
