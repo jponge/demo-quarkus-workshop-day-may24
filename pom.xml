@@ -26,4 +26,14 @@
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>3.25.3</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
 </project>
