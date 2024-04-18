@@ -13,6 +13,7 @@
   <modules>
     <module>activity-service</module>
     <module>user-profile-service</module>
+    <module>ingestion-service</module>
   </modules>
 
   <properties>
