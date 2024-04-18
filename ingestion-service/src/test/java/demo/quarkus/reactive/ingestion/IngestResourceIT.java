@@ -1,3 +1,5 @@
+package demo.quarkus.reactive.ingestion;
+
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 @QuarkusIntegrationTest

@@ -1,3 +1,5 @@
+package demo.quarkus.reactive.ingestion;
+
 import io.smallrye.mutiny.Uni;
 import io.smallrye.reactive.messaging.MutinyEmitter;
 import io.smallrye.reactive.messaging.kafka.KafkaRecord;

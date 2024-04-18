@@ -1,3 +1,5 @@
+package demo.quarkus.reactive.ingestion;
+
 import io.quarkus.kafka.client.serialization.JsonObjectSerde;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
