@@ -14,6 +14,7 @@
     <module>activity-service</module>
     <module>user-profile-service</module>
     <module>ingestion-service</module>
+    <module>congrats-service</module>
   </modules>
 
   <properties>
