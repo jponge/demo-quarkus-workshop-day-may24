@@ -32,7 +32,7 @@ class EventsProcessorTest {
   void setUp() {
     TestDbSetup.cleanDb(pgPool);
     companion.registerSerde(JsonObject.class, new JsonObjectSerde());
-    companion.getOrCreateAdminClient().deleteTopics(List.of("incoming.steps", "daily.step.updates"));
+    companion.topics().clear("incoming.steps", "daily.step.updates");
   }
 
   @Test
@@ -53,7 +53,7 @@ class EventsProcessorTest {
       .fromTopics("daily.step.updates", 1)
       .awaitCompletion()
       .getRecords();
-    JsonObject last = records.get(0).value();
+    JsonObject last = records.getFirst().value();
     assertThat(last.getString("deviceId")).isEqualTo("123");
     assertThat(last.containsKey("timestamp")).isTrue();
     assertThat(last.getInteger("stepsCount")).isEqualTo(200);

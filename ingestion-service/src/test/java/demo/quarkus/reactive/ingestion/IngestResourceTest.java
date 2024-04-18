@@ -31,7 +31,7 @@ class IngestResourceTest {
   @BeforeEach
   void setUp() {
     companion.registerSerde(JsonObject.class, new JsonObjectSerde());
-    companion.getOrCreateAdminClient().deleteTopics(List.of("incoming.steps"));
+    companion.topics().clear("incoming.steps");
   }
 
   @Test
