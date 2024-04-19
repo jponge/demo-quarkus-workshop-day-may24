@@ -16,6 +16,7 @@
     <module>ingestion-service</module>
     <module>congrats-service</module>
     <module>event-stats-service</module>
+    <module>public-api</module>
   </modules>
 
   <properties>
