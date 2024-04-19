@@ -31,7 +31,11 @@ class IngestResourceTest {
   @BeforeEach
   void setUp() {
     companion.registerSerde(JsonObject.class, new JsonObjectSerde());
-    companion.topics().clear("incoming.steps");
+    for (String topic : companion.topics().list()) {
+      if ("incoming.steps".equals(topic)) {
+        companion.topics().clear(topic);
+      }
+    }
   }
 
   @Test

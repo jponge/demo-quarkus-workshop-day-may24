@@ -32,7 +32,11 @@ class EventsProcessorTest {
   void setUp() {
     TestDbSetup.cleanDb(pgPool);
     companion.registerSerde(JsonObject.class, new JsonObjectSerde());
-    companion.topics().clear("incoming.steps", "daily.step.updates");
+    for (String topic : companion.topics().list()) {
+      if ("incoming.steps".equals(topic) || "daily.step.updates".equals(topic)) {
+        companion.topics().clear(topic);
+      }
+    }
   }
 
   @Test

@@ -47,7 +47,11 @@ class CongratsMailerTest {
   @BeforeEach
   void setUp() throws Exception {
     companion.registerSerde(JsonObject.class, new JsonObjectSerde());
-    companion.topics().clear("daily.step.updates");
+    for (String topic : companion.topics().list()) {
+      if ("daily.step.updates".equals(topic)) {
+        companion.topics().clear(topic);
+      }
+    }
     mailbox.clear();
     vertx = Vertx.vertx();
     vertx.deployVerticle(new MockUserProfileServer()).await().indefinitely();
