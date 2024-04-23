@@ -17,6 +17,7 @@
     <module>congrats-service</module>
     <module>event-stats-service</module>
     <module>public-api</module>
+    <module>user-webapp</module>
   </modules>
 
   <properties>
@@ -29,6 +30,10 @@
     <quarkus.platform.version>3.9.3</quarkus.platform.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
+    <assertj-core.version>3.25.3</assertj-core.version>
+    <frontend-maven-plugin.version>1.15.0</frontend-maven-plugin.version>
+    <frontend-maven-plugin.nodeVersion>v16.16.0</frontend-maven-plugin.nodeVersion>
+    <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -36,7 +41,7 @@
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>3.25.3</version>
+        <version>${assertj-core.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
