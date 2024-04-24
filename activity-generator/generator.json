@@ -1,0 +1,28 @@
+{
+  "public-api": {
+    "hostname": "localhost",
+    "port": 4000
+  },
+  "ingestion": {
+    "hostname": "localhost",
+    "port": 3002
+  },
+  "profiles": [
+    {
+      "username": "Julien",
+      "password": "1234",
+      "email": "julien@some-email.fr",
+      "deviceId": "abc-123-def",
+      "city": "Lyon",
+      "makePublic": true
+    },
+    {
+      "username": "Thomas",
+      "password": "abcd",
+      "email": "thomas@some-email.fr",
+      "deviceId": "mars-13-jul",
+      "city": "Marseille",
+      "makePublic": true
+    }
+  ]
+}

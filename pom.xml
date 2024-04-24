@@ -18,6 +18,7 @@
     <module>event-stats-service</module>
     <module>public-api</module>
     <module>user-webapp</module>
+    <module>activity-generator</module>
   </modules>
 
   <properties>
