@@ -3,7 +3,7 @@
     <div class="alert alert-danger" role="alert" v-if="alertMessage.length > 0">
       {{ alertMessage }}
     </div>
-    <form v-on:submit="submit">
+    <form v-on:submit.prevent="submit">
       <div class="form-group">
         <label for="username">User name</label>
         <input type="username" class="form-control" id="username" placeholder="somebody123" v-model="username">
@@ -39,6 +39,7 @@
 
 <script>
   import axios from 'axios'
+  import Config from '../config'
 
   export default {
     data() {
@@ -63,7 +64,7 @@
           makePublic: this.makePublic
         }
         axios
-          .post("http://localhost:4000/register", payload)
+          .post(`${Config.userApiEndpoint}/register`, payload)
           .then(() => this.$router.push('/'))
           .catch(err => this.alertMessage = err.message)
       }

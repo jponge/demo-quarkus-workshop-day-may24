@@ -32,7 +32,7 @@
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
     <assertj-core.version>3.25.3</assertj-core.version>
     <frontend-maven-plugin.version>1.15.0</frontend-maven-plugin.version>
-    <frontend-maven-plugin.nodeVersion>v16.16.0</frontend-maven-plugin.nodeVersion>
+    <frontend-maven-plugin.nodeVersion>v20.12.2</frontend-maven-plugin.nodeVersion>
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
   </properties>
 

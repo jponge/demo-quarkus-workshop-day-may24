@@ -1,5 +1,6 @@
 package demo.quarkus.reactive.api;
 
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.JWTOptions;
@@ -63,6 +64,11 @@ public class PublicApiRoutes {
   }
 
   public void init(@Observes Router router) {
+    router.route().handler(ctx -> {
+      Log.info(ctx.request().method() + " -> " + ctx.request().path());
+      ctx.next();
+    });
+
     // Account
     router.post("/register").handler(userProfileProxy);
     router.post("/token").handler(BodyHandler.create()).handler(this::token);

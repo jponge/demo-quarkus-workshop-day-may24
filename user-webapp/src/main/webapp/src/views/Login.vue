@@ -3,7 +3,7 @@
     <div class="alert alert-danger" role="alert" v-if="alertMessage.length > 0">
       {{ alertMessage }}
     </div>
-    <form v-on:submit="login">
+    <form v-on:submit.prevent="login">
       <div class="form-group">
         <label for="username">User name</label>
         <input type="username" class="form-control" id="username" placeholder="somebody123" v-model="username">
@@ -15,13 +15,14 @@
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <div>
-      <p>...or <router-link to="/register">register</router-link></p>
+      <p>...or <RouterLink to="/register">register</RouterLink></p>
     </div>
   </div>
 </template>
 
 <script>
   import DataStore from '../DataStore'
+  import Config from '../config'
   import axios from 'axios'
 
   export default {
@@ -38,7 +39,7 @@
           return
         }
         axios
-          .post("http://localhost:4000/token", {
+          .post(`${Config.userApiEndpoint}/token`, {
             username: this.username,
             password: this.password
           })
