@@ -12,9 +12,9 @@
         <li>Username: {{ username }}</li>
         <li>Device identifier: {{ deviceId }}</li>
         <li v-if="totalSteps > 0">
-          You have done <span class="badge badge-success">{{ totalSteps }}</span> steps in total,
-          <span class="badge badge-success">{{ stepsForMonth }}</span> this month, and
-          <span class="badge badge-success">{{ stepsForToday }}</span> today.
+          You have done <span class="badge rounded-pill text-bg-success">{{ totalSteps }}</span> steps in total,
+          <span class="badge rounded-pill text-bg-success">{{ stepsForMonth }}</span> this month, and
+          <span class="badge rounded-pill text-bg-success">{{ stepsForToday }}</span> today.
         </li>
         <li v-else>
           We don't have any stats for you yet.
