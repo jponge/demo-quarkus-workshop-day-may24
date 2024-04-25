@@ -43,8 +43,6 @@ public class PublicApiRoutes {
 
   HttpClient httpClient;
   ProxyHandler userProfileProxy;
-  ProxyHandler activityServiceProxy;
-
   WebClient webClient;
 
   @PostConstruct
@@ -59,8 +57,6 @@ public class PublicApiRoutes {
 
     httpClient = vertx.createHttpClient();
     userProfileProxy = ProxyHandler.create(HttpProxy.reverseProxy(httpClient).origin(3000, "localhost"));
-    activityServiceProxy = ProxyHandler.create(HttpProxy.reverseProxy(httpClient).origin(3001, "localhost"));
-
     webClient = WebClient.wrap(httpClient);
   }
 
