@@ -1,5 +1,6 @@
 package demo.quarkus.reactive.event.stats;
 
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.reactive.messaging.kafka.KafkaRecord;
@@ -47,10 +48,12 @@ public class EventStatsProcessor {
   }
 
   private static JsonObject computeThroughput(List<JsonObject> list) {
-    return new JsonObject()
+    JsonObject result = new JsonObject()
       .put("seconds", 5)
       .put("count", list.size())
       .put("throughput", (((double) list.size()) / 5.0d));
+    Log.info("Throughput computed: " + result.encode());
+    return result;
   }
 
   @Incoming("updates")
@@ -93,6 +96,7 @@ public class EventStatsProcessor {
 
   private static Message<JsonObject> computeUserActivity(Message<JsonObject> message) {
     JsonObject payload = message.getPayload();
+    Log.info("User activity computed: " + payload.encode());
     return KafkaRecord.of(payload.getString("username"), payload);
   }
 
@@ -122,6 +126,7 @@ public class EventStatsProcessor {
       .put("city", city)
       .put("stepsCount", stepsCount)
       .put("updates", list.size());
+    Log.info("City trend computed: " + payload.encode());
     return KafkaRecord.of(city, payload);
   }
 

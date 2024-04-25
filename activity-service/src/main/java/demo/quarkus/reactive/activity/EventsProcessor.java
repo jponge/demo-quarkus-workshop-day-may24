@@ -1,5 +1,6 @@
 package demo.quarkus.reactive.activity;
 
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.reactive.messaging.kafka.KafkaRecord;
 import io.vertx.core.json.JsonObject;
@@ -27,6 +28,8 @@ public class EventsProcessor {
   @Retry(delay = 10, delayUnit = SECONDS)
   @Outgoing("records")
   public Uni<JsonObject> insertRecord(JsonObject data) {
+    Log.info("Incoming steps update: " + data.encode());
+
     Tuple values = Tuple.of(
       data.getString("deviceId"),
       data.getLong("deviceSync"),
@@ -45,6 +48,8 @@ public class EventsProcessor {
   @Incoming("records")
   @Outgoing("updates")
   public Uni<KafkaRecord<String, JsonObject>> generateActivityUpdate(JsonObject data) {
+    Log.info("Incoming activity update: " + data.encode());
+
     String deviceId = data.getString("deviceId");
     LocalDateTime now = LocalDateTime.now();
     String key = deviceId + ":" + now.getYear() + "-" + now.getMonth() + "-" + now.getDayOfMonth();

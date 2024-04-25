@@ -1,5 +1,6 @@
 package demo.quarkus.reactive.activity;
 
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -22,6 +23,8 @@ public class RankingResource {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Uni<JsonArray> ranking() {
+    Log.info("Ranking query");
+
     return pgPool.preparedQuery(SqlQueries.rankingLast24Hours())
       .execute()
       .onItem().transform(RankingResource::sendRanking);

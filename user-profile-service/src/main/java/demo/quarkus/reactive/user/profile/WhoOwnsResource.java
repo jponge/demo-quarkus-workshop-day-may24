@@ -1,5 +1,6 @@
 package demo.quarkus.reactive.user.profile;
 
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.persistence.NoResultException;
@@ -19,6 +20,8 @@ public class WhoOwnsResource {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Uni<UserProfileOwner> whoOwns(String deviceId) {
+    Log.info("Checking who owns " + deviceId);
+
     return repository.findByDeviceId(deviceId)
       .onFailure(NoResultException.class).transform(ignored -> new WebApplicationException(404));
   }

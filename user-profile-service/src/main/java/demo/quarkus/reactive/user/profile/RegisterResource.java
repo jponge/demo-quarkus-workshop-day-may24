@@ -1,5 +1,6 @@
 package demo.quarkus.reactive.user.profile;
 
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -18,6 +19,8 @@ public class RegisterResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Uni<RestResponse<Void>> register(@Valid UserProfile userProfile) {
+    Log.info("Registering " + userProfile.username);
+
     return repository.save(userProfile)
       .replaceWith(RestResponse.<Void>ok())
       .onFailure(RegisterResource::isDuplicateError).transform(RegisterResource::toConflict);

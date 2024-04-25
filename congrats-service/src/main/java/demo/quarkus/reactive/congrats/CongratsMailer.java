@@ -1,5 +1,6 @@
 package demo.quarkus.reactive.congrats;
 
+import io.quarkus.logging.Log;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.smallrye.mutiny.Uni;
@@ -36,10 +37,12 @@ public class CongratsMailer {
   @Incoming("updates")
   @Retry(delay = 10, delayUnit = SECONDS)
   public Uni<Void> processEvent(JsonObject payload) {
+    String deviceId = payload.getString("deviceId");
     if (below10k(payload)) {
+      Log.info("Below 10k: " + deviceId);
       return Uni.createFrom().voidItem();
     }
-    String deviceId = payload.getString("deviceId");
+    Log.info("Above 10k: " + deviceId);
     return fetchOwner(deviceId)
       .onItem().transformToUni(username -> fetchEmailAddress(username))
       .onItem().transformToUni(recipient -> sendEmail(recipient, payload));

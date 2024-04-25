@@ -64,8 +64,10 @@ public class PublicApiRoutes {
   }
 
   public void init(@Observes Router router) {
+
+    // Minimally log incoming requests
     router.route().handler(ctx -> {
-      Log.info(ctx.request().method() + " -> " + ctx.request().path());
+      Log.info(ctx.request().method() + " " + ctx.request().path());
       ctx.next();
     });
 

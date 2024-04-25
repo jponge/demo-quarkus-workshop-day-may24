@@ -15,4 +15,13 @@ public class Payload {
   @NotNull
   @PositiveOrZero
   public Integer stepsCount;
+
+  @Override
+  public String toString() {
+    return "Payload{" +
+           "deviceId='" + deviceId + '\'' +
+           ", deviceSync=" + deviceSync +
+           ", stepsCount=" + stepsCount +
+           '}';
+  }
 }

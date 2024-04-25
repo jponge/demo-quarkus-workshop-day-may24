@@ -1,5 +1,6 @@
 package demo.quarkus.reactive.user.profile;
 
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.persistence.NoResultException;
@@ -17,6 +18,8 @@ public class UserProfileResource {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Uni<UserProfileFetch> fetchUser(String username) {
+    Log.info("Fetching profile of " + username);
+
     return repository.findByUsername(username)
       .onFailure(NoResultException.class).transform(ignored -> new WebApplicationException(404));
   }
@@ -25,6 +28,8 @@ public class UserProfileResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Uni<RestResponse<Void>> updateUser(String username, @Valid UserProfileUpdate update) {
+    Log.info("Updating profile of " + username);
+
     return repository.update(username, update).replaceWith(RestResponse.ok());
   }
 }

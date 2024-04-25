@@ -1,5 +1,6 @@
 package demo.quarkus.reactive.ingestion;
 
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.reactive.messaging.MutinyEmitter;
 import io.smallrye.reactive.messaging.kafka.KafkaRecord;
@@ -31,6 +32,8 @@ public class IngestResource {
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   public Uni<RestResponse<Void>> httpIngest(@Valid Payload payload) {
+    Log.info("Ingesting payload: " + payload);
+
     OutgoingKafkaRecord<String, Payload> record = KafkaRecord.of(payload.deviceId, payload);
     return stepsEmitter.sendMessage(record).replaceWith(RestResponse.ok());
   }
