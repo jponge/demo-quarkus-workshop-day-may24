@@ -12,6 +12,7 @@ import io.vertx.mutiny.core.http.HttpClient;
 import io.vertx.mutiny.ext.auth.jwt.JWTAuth;
 import io.vertx.mutiny.ext.web.Router;
 import io.vertx.mutiny.ext.web.RoutingContext;
+import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
 import io.vertx.mutiny.ext.web.client.predicate.ResponsePredicate;
 import io.vertx.mutiny.ext.web.codec.BodyCodec;
@@ -92,17 +93,66 @@ public class PublicApiRoutes {
     router.get("/:username/total")
       .handler(jwtHandler)
       .handler(this::checkUser)
-      .handler(activityServiceProxy);
+      .handler(this::fetchTotalSteps);
 
     router.get("/:username/:year/:month")
       .handler(jwtHandler)
       .handler(this::checkUser)
-      .handler(activityServiceProxy);
+      .handler(this::fetchMonthSteps);
 
     router.get("/:username/:year/:month/:day")
       .handler(jwtHandler)
       .handler(this::checkUser)
-      .handler(activityServiceProxy);
+      .handler(this::fetchDaySteps);
+  }
+
+  private void fetchTotalSteps(RoutingContext rc) {
+    String username = rc.pathParam("username");
+    fetchDeviceId(username)
+      .onItem().transformToUni(deviceId -> fetchSteps(deviceId, "/device/" + deviceId + "/total"))
+      .subscribe().with(
+        res -> forwardJsonPayload(rc, res),
+        err -> handleError(rc, err)
+      );
+  }
+
+  private void fetchMonthSteps(RoutingContext rc) {
+    String username = rc.pathParam("username");
+    String year = rc.pathParam("year");
+    String month = rc.pathParam("month");
+    fetchDeviceId(username)
+      .onItem().transformToUni(deviceId -> fetchSteps(deviceId, "/device/" + deviceId + "/" + year + "/" + month))
+      .subscribe().with(
+        res -> forwardJsonPayload(rc, res),
+        err -> handleError(rc, err)
+      );
+  }
+
+  private void fetchDaySteps(RoutingContext rc) {
+    String username = rc.pathParam("username");
+    String year = rc.pathParam("year");
+    String month = rc.pathParam("month");
+    String day = rc.pathParam("day");
+    fetchDeviceId(username)
+      .onItem().transformToUni(deviceId -> fetchSteps(deviceId, "/device/" + deviceId + "/" + year + "/" + month + "/" + day))
+      .subscribe().with(
+        res -> forwardJsonPayload(rc, res),
+        err -> handleError(rc, err)
+      );
+  }
+
+  private static void forwardJsonPayload(RoutingContext rc, JsonObject res) {
+    rc.response()
+      .putHeader("Content-Type", "application/json")
+      .endAndForget(res.encode());
+  }
+
+  private Uni<JsonObject> fetchSteps(String deviceId, String path) {
+    return webClient.get(3001, "localhost", path)
+      .expect(ResponsePredicate.SC_OK)
+      .as(BodyCodec.jsonObject())
+      .send()
+      .onItem().transform(HttpResponse::body);
   }
 
   private void token(RoutingContext rc) {
@@ -147,6 +197,11 @@ public class PublicApiRoutes {
   private void handleAuthError(RoutingContext rc, Throwable err) {
     logger.error("Authentication error", err);
     rc.fail(401);
+  }
+
+  private void handleError(RoutingContext rc, Throwable err) {
+    logger.error("Error", err);
+    rc.fail(500);
   }
 
   private void checkUser(RoutingContext rc) {

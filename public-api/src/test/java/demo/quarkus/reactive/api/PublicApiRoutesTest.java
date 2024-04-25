@@ -10,8 +10,14 @@ import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.ext.web.Router;
 import io.vertx.mutiny.ext.web.RoutingContext;
 import io.vertx.mutiny.ext.web.handler.BodyHandler;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -312,9 +318,9 @@ class PublicApiRoutesTest {
     @Override
     public Uni<Void> asyncStart() {
       Router router = Router.router(vertx);
-      router.get("/:deviceId/total").handler(this::total);
-      router.get("/:deviceId/:year/:month").handler(this::stepsOnMonth);
-      router.get("/:deviceId/:year/:month/:day").handler(this::stepsOnDay);
+      router.get("/device/:deviceId/total").handler(this::total);
+      router.get("/device/:deviceId/:year/:month").handler(this::stepsOnMonth);
+      router.get("/device/:deviceId/:year/:month/:day").handler(this::stepsOnDay);
       return vertx.createHttpServer()
         .requestHandler(router)
         .listen(3001)
