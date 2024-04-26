@@ -25,6 +25,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 @ApplicationScoped
@@ -39,8 +40,19 @@ public class PublicApiRoutes {
   @Inject
   CryptoHelper cryptoHelper;
 
-  JWTAuth jwtAuth;
+  @ConfigProperty(name = "backend.user-service.host")
+  String userServiceHost;
 
+  @ConfigProperty(name = "backend.user-service.port")
+  int userServicePort;
+
+  @ConfigProperty(name = "backend.activity-service.host")
+  String activityServiceHost;
+
+  @ConfigProperty(name = "backend.activity-service.port")
+  int activityServicePort;
+
+  JWTAuth jwtAuth;
   HttpClient httpClient;
   ProxyHandler userProfileProxy;
   WebClient webClient;
@@ -56,17 +68,11 @@ public class PublicApiRoutes {
         .setBuffer(cryptoHelper.privateKey())));
 
     httpClient = vertx.createHttpClient();
-    userProfileProxy = ProxyHandler.create(HttpProxy.reverseProxy(httpClient).origin(3000, "localhost"));
+    userProfileProxy = ProxyHandler.create(HttpProxy.reverseProxy(httpClient).origin(userServicePort, userServiceHost));
     webClient = WebClient.wrap(httpClient);
   }
 
   public void init(@Observes Router router) {
-
-    // Minimally log incoming requests
-    router.route().handler(ctx -> {
-      Log.info(ctx.request().method() + " " + ctx.request().path());
-      ctx.next();
-    });
 
     // Account
     router.post("/register").handler(userProfileProxy);
@@ -144,7 +150,7 @@ public class PublicApiRoutes {
   }
 
   private Uni<JsonObject> fetchSteps(String deviceId, String path) {
-    return webClient.get(3001, "localhost", path)
+    return webClient.get(activityServicePort, activityServiceHost, path)
       .expect(ResponsePredicate.SC_OK)
       .as(BodyCodec.jsonObject())
       .send()
@@ -155,7 +161,7 @@ public class PublicApiRoutes {
     JsonObject payload = rc.body().asJsonObject();
     String username = payload.getString("username");
 
-    webClient.post(3000, "localhost", "/authenticate")
+    webClient.post(activityServicePort, activityServiceHost, "/authenticate")
       .expect(ResponsePredicate.SC_SUCCESS)
       .sendJsonObject(payload)
       .replaceWithVoid()
@@ -168,7 +174,7 @@ public class PublicApiRoutes {
   }
 
   private Uni<String> fetchDeviceId(String username) {
-    return webClient.get(3000, "localhost", "/" + username)
+    return webClient.get(userServicePort, userServiceHost, "/" + username)
       .expect(ResponsePredicate.SC_OK)
       .as(BodyCodec.jsonObject())
       .send()
