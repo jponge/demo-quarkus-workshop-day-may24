@@ -161,7 +161,7 @@ public class PublicApiRoutes {
     JsonObject payload = rc.body().asJsonObject();
     String username = payload.getString("username");
 
-    webClient.post(activityServicePort, activityServiceHost, "/authenticate")
+    webClient.post(userServicePort, userServiceHost, "/authenticate")
       .expect(ResponsePredicate.SC_SUCCESS)
       .sendJsonObject(payload)
       .replaceWithVoid()

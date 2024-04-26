@@ -10,6 +10,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.pgclient.PgPool;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,8 @@ class EventsProcessorTest {
   PgPool pgPool;
 
   @BeforeEach
-  void setUp() {
+  @AfterEach
+  void setUpAndCleanup() {
     TestDbSetup.cleanDb(pgPool);
     companion.registerSerde(JsonObject.class, new JsonObjectSerde());
     for (String topic : companion.topics().list()) {
