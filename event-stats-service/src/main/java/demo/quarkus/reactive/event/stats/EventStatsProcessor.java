@@ -43,7 +43,7 @@ public class EventStatsProcessor {
   @Outgoing("throughput")
   public Multi<JsonObject> throughput(Multi<JsonObject> stream) {
     return stream
-      .group().intoLists().every(Duration.ofSeconds(5))
+      .group().intoLists().every(Duration.ofSeconds(5), true)
       .onItem().transform(EventStatsProcessor::computeThroughput);
   }
 
