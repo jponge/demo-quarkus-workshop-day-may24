@@ -106,7 +106,7 @@ public class EventStatsProcessor {
   public Multi<Message<JsonObject>> cityTrends(Multi<Message<JsonObject>> stream) {
     return stream
       .group().by(msg -> extractCity(msg.getPayload()))
-      .onItem().transformToMultiAndConcatenate(byCity -> byCity.group().intoLists().every(Duration.ofSeconds(5)))
+      .onItem().transformToMultiAndMerge(byCity -> byCity.group().intoLists().every(Duration.ofSeconds(5)))
       .onItem().transform(EventStatsProcessor::computeCityTrend);
   }
 
