@@ -12,6 +12,7 @@ ingestion-service: (_run "ingestion-service")
 public-api: (_run "public-api")
 user-profile-service: (_run "user-profile-service")
 user-webapp: (_run "user-webapp")
+dashboard-webapp: (_run "dashboard-webapp")
 
 activity-generator:
   cd activity-generator ; mvn quarkus:{{mode}}
