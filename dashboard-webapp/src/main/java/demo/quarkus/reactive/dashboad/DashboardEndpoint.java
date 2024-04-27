@@ -118,9 +118,4 @@ public class DashboardEndpoint {
       publicRanking.put(data.getString("username"), data);
     }
   }
-
-  @GET
-  public String yolo() {
-    return "Yolo";
-  }
 }
