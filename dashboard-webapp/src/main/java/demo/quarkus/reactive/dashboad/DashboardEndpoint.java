@@ -3,6 +3,7 @@ package demo.quarkus.reactive.dashboad;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
@@ -14,13 +15,22 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.reactive.messaging.Acknowledgment;
 import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.resteasy.reactive.RestStreamElementType;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+import static org.eclipse.microprofile.reactive.messaging.Acknowledgment.Strategy.PRE_PROCESSING;
 
 @Path("/dashboard")
 public class DashboardEndpoint {
@@ -75,6 +85,84 @@ public class DashboardEndpoint {
   public Multi<JsonObject> cityTrendStream() {
     Log.info("New city trend stream subscriber");
     return cityTrendEvents;
+  }
+
+  @Incoming("user-activity")
+  @Acknowledgment(PRE_PROCESSING)
+  @Outgoing("public-ranking")
+  public Multi<JsonArray> maintainPublicRankings(Multi<JsonObject> stream) {
+    return stream
+      .select().where(this::activityIsPublic)
+      .group().intoLists().every(Duration.ofSeconds(5))
+      .onItem().transform(this::computeRanking);
+  }
+
+  @Inject
+  @Channel("public-ranking")
+  Multi<JsonArray> publicRankingStream;
+
+  @GET
+  @Path("public-ranking")
+  @RestStreamElementType(MediaType.APPLICATION_JSON)
+  public Multi<JsonArray> publicRankingStream() {
+    Log.info("New public ranking stream subscriber");
+
+    return Multi.createBy().concatenating().streams(
+      Multi.createFrom().item(computeRanking()),
+      publicRankingStream
+    );
+  }
+
+  private boolean activityIsPublic(JsonObject record) {
+    return record.getBoolean("makePublic");
+  }
+
+  private JsonArray computeRanking(List<JsonObject> updates) {
+    Log.info("Updating rankings with " + updates.size() + " updates");
+    copyBetterScores(updates);
+    pruneOldEntries();
+    return computeRanking();
+  }
+
+  private void copyBetterScores(List<JsonObject> updates) {
+    for (JsonObject update : updates) {
+      long stepsCount = update.getLong("stepsCount");
+      JsonObject previousData = publicRanking.get(update.getString("username"));
+      if (previousData == null || previousData.getLong("stepsCount") < stepsCount) {
+        publicRanking.put(update.getString("username"), update);
+      }
+    }
+  }
+
+  private void pruneOldEntries() {
+    Instant now = Instant.now();
+    Iterator<Map.Entry<String, JsonObject>> iterator = publicRanking.entrySet().iterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, JsonObject> entry = iterator.next();
+      Instant timestamp = Instant.parse(entry.getValue().getString("timestamp"));
+      if (timestamp.until(now, ChronoUnit.DAYS) >= 1L) {
+        iterator.remove();
+      }
+    }
+  }
+
+  private JsonArray computeRanking() {
+    List<JsonObject> ranking = publicRanking.entrySet()
+      .stream()
+      .map(Map.Entry::getValue)
+      .sorted(this::compareStepsCountInReverseOrder)
+      .map(json -> new JsonObject()
+        .put("username", json.getString("username"))
+        .put("stepsCount", json.getLong("stepsCount"))
+        .put("city", json.getString("city")))
+      .collect(Collectors.toList());
+    return new JsonArray(ranking);
+  }
+
+  private int compareStepsCountInReverseOrder(JsonObject a, JsonObject b) {
+    Long first = a.getLong("stepsCount");
+    Long second = b.getLong("stepsCount");
+    return second.compareTo(first);
   }
 
   Uni<Void> hydrate() {

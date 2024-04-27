@@ -17,6 +17,7 @@
             <th scope="col">Today's pulse</th>
           </tr>
           </thead>
+          <tbody>
           <transition-group name="city-trends" tag="tbody">
             <tr v-for="item in cityTrendRanking" v-bind:key="item.city">
               <td scope="row">{{ item.city }}</td>
@@ -28,6 +29,7 @@
               </td>
             </tr>
           </transition-group>
+          </tbody>
         </table>
       </div>
     </div>
@@ -64,12 +66,6 @@
 <script>
 import moment from 'moment'
 
-// import EventBus from 'vertx3-eventbus-client'
-// import moment from 'moment'
-//
-// const eventBus = new EventBus("/eventbus")
-// eventBus.enableReconnect(true)
-
 export default {
   data() {
     return {
@@ -92,19 +88,11 @@ export default {
       this.cityTrendData[payload.city] = payload
     }
 
-    // eventBus.onopen = () => {
-    //   eventBus.registerHandler("client.updates.throughput", (err, message) => {
-    //     this.throughput = message.body.throughput
-    //   })
-    //   eventBus.registerHandler("client.updates.city-trend", (err, message) => {
-    //     const data = message.body
-    //     data.moment = moment(data.timestamp)
-    //     this.$set(this.cityTrendData, message.body.city, data)
-    //   })
-    //   eventBus.registerHandler("client.updates.publicRanking", (err, message) => {
-    //     this.publicRanking = message.body
-    //   })
-    // }
+    const publicRankingStream = new EventSource("/dashboard/public-ranking");
+    publicRankingStream.onmessage = (message) => {
+      this.publicRanking = JSON.parse(message.data)
+    }
+
   },
   computed: {
     cityTrendRanking: function () {
