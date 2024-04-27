@@ -11,12 +11,14 @@ import io.vertx.pgclient.PgException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.faulttolerance.Retry;
+import org.eclipse.microprofile.reactive.messaging.Acknowledgment;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 
 import java.time.LocalDateTime;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static org.eclipse.microprofile.reactive.messaging.Acknowledgment.Strategy.PRE_PROCESSING;
 
 @ApplicationScoped
 public class EventsProcessor {
@@ -25,6 +27,7 @@ public class EventsProcessor {
   PgPool pgPool;
 
   @Incoming("steps")
+  @Acknowledgment(PRE_PROCESSING)
   @Retry(delay = 10, delayUnit = SECONDS)
   @Outgoing("records")
   public Uni<JsonObject> insertRecord(JsonObject data) {
