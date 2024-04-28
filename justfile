@@ -1,5 +1,6 @@
 #!/usr/bin/env just --justfile
 
+# Use `just mode=run (...)` for quarkus:run instead of quarkus:dev
 mode := "dev"
 
 _run module:
