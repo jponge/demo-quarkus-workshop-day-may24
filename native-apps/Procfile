@@ -1,0 +1,8 @@
+activity: ./activity-service-1.0-runner -Dkafka.bootstrap.servers=localhost:9092 -Dquarkus.datasource.username=quarkus -Dquarkus.datasource.password=1234 -Dquarkus.datasource.reactive.url=postgresql://localhost:5432/quarkus
+congrats: ./congrats-service-1.0-runner -Dkafka.bootstrap.servers=localhost:9092
+dashboard: ./dashboard-webapp-1.0-runner -Dkafka.bootstrap.servers=localhost:9092
+event-stats: ./event-stats-service-1.0-runner -Dkafka.bootstrap.servers=localhost:9092
+ingestion: ./ingestion-service-1.0-runner -Dkafka.bootstrap.servers=localhost:9092
+public-api: ./public-api-1.0-runner
+user-profile: ./user-profile-service-1.0-runner -Dquarkus.datasource.username=quarkus -Dquarkus.datasource.password=1234 -Dquarkus.datasource.reactive.url=postgresql://localhost:5432/quarkus
+user-webapp: ./user-webapp-1.0-runner
