@@ -1,30 +1,25 @@
 <template>
-  <div>
-    <div class="row mt-5">
-      <div class="col">
-        <h4>
-          <span class="badge rounded-pill text-bg-dark">{{ throughput }}</span> device updates per second
-        </h4>
+  <div class="mt-6">
+    <h1 class="title">Dashboard</h1>
+    <div>
+      <div>
+        <h5 class="title is-5">
+          <span class="tag is-rounded is-large is-dark">{{ throughput }}</span> device updates per second
+        </h5>
       </div>
     </div>
-    <div class="row mt-5">
-      <div class="col">
-        <h4>Trends</h4>
-        <table class="table table-sm table-hover">
-          <thead>
-          <tr>
-            <th scope="col">City</th>
-            <th scope="col">Today's pulse</th>
-          </tr>
-          </thead>
+    <div class="mt-6">
+      <h5 class="title is-5">Trends</h5>
+      <div class="table-container">        
+        <table class="table is-striped is-hoverable">
           <tbody>
           <transition-group name="city-trends" tag="tbody">
             <tr v-for="item in cityTrendRanking" v-bind:key="item.city">
-              <td scope="row">{{ item.city }}</td>
+              <td>{{ item.city }}</td>
               <td>
                 +{{ item.stepsCount }}
-                <span class="text-secondary font-weight-lighter">
-                ({{ item.moment.format("ddd	hh:mm:ss") }})
+                <span class="has-text-weight-light">
+                  ({{ item.moment.format("ddd	hh:mm:ss") }})
                 </span>
               </td>
             </tr>
@@ -33,15 +28,15 @@
         </table>
       </div>
     </div>
-    <div class="row mt-5">
-      <div class="col">
-        <h4>Public ranking (last 24 hours)</h4>
-        <table class="table table-sm table-hover">
+    <div class="mt-6">
+      <h5 class="title is-5">Public ranking (last 24 hours)</h5>
+      <div class="table-container">        
+        <table class="table is-striped is-hoverable">
           <thead>
           <tr>
-            <th scope="col">Name</th>
-            <th scope="col">From</th>
-            <th scope="col">Steps</th>
+            <th>Name</th>
+            <th>From</th>
+            <th>Steps</th>
           </tr>
           </thead>
           <transition-group name="public-ranking" tag="tbody">

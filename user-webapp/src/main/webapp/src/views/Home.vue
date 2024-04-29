@@ -1,45 +1,45 @@
 <template>
-  <div>
-    <div class="alert alert-danger" role="alert" v-if="alertMessage.length > 0">
+  <div class="mt-6">
+    <div class="notification is-danger" role="alert" v-if="alertMessage.length > 0">
       {{ alertMessage }}
     </div>
-    <div class="float-end">
-      <button v-on:click="logout" class="btn btn-outline-danger" type="button">logout</button>
+    <h1 class="title">Profile</h1>
+    <div class="is-pulled-right">
+      <button v-on:click="logout" class="button is-link is-danger" type="button">logout</button>
     </div>
-    <div>
-      <h3>Welcome!</h3>
+    <div class="content">
       <ul>
-        <li>Username: {{ username }}</li>
-        <li>Device identifier: {{ deviceId }}</li>
+        <li>Username: <span class="tag is-medium is-info">{{ username }}</span></li>
+        <li>Device identifier: <span class="tag is-medium is-info">{{ deviceId }}</span></li>
         <li v-if="totalSteps > 0">
-          You have done <span class="badge rounded-pill text-bg-success">{{ totalSteps }}</span> steps in total,
-          <span class="badge rounded-pill text-bg-success">{{ stepsForMonth }}</span> this month, and
-          <span class="badge rounded-pill text-bg-success">{{ stepsForToday }}</span> today.
+          You have done <span class="tag is-rounded is-medium is-primary">{{ totalSteps }}</span> steps in total,
+          <span class="tag is-rounded is-medium is-primary">{{ stepsForMonth }}</span> this month, and
+          <span class="tag is-rounded is-medium is-primary">{{ stepsForToday }}</span> today.
         </li>
         <li v-else>
           We don't have any stats for you yet.
         </li>
       </ul>
     </div>
-    <div class="mt-5">
-      <h5>Update your details</h5>
+    <div class="mt-6">
+      <h2 class="subtitle">Update your details</h2>
       <form v-on:submit.prevent="sendUpdate">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" class="form-control" id="email" placeholder="foo@mail.me" v-model="email">
+        <div class="field">
+          <label class="label" for="email">Email</label>
+          <input type="email" class="input" id="email" placeholder="foo@mail.me" v-model="email">
+        </div>
+        <div class="field">
+          <label class="label" for="city">City</label>
+          <input type="city" class="input" id="city" placeholder="Lyon" v-model="city">
+        </div>
+        <div class="field">
+          <label class="checkbox" for="makePublic">
+          <input type="checkbox" id="makePublic" v-model="makePublic">
+          I want to appear in public rankings
+        </label>
         </div>
         <div class="form-group">
-          <label for="city">City</label>
-          <input type="city" class="form-control" id="city" placeholder="Lyon" v-model="city">
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="makePublic" v-model="makePublic">
-          <label class="form-check-label" for="makePublic">
-            I want to appear in public rankings
-          </label>
-        </div>
-        <div class="form-group">
-          <button type="submit" class="btn btn-outline-primary">Submit</button>
+          <button type="submit" class="button is-link">Submit</button>
         </div>
       </form>
     </div>

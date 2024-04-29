@@ -1,18 +1,19 @@
 <template>
-  <div>
-    <div class="alert alert-danger" role="alert" v-if="alertMessage.length > 0">
+  <div class="mt-6">    
+    <div class="notification is-danger" role="alert" v-if="alertMessage.length > 0">
       {{ alertMessage }}
     </div>
+    <h1 class="title">Login</h1>
     <form v-on:submit.prevent="login">
-      <div class="form-group">
-        <label for="username">User name</label>
-        <input type="username" class="form-control" id="username" placeholder="somebody123" v-model="username">
+      <div class="field">
+        <label class="label" for="username">User name</label>
+        <input type="username" class="input" id="username" placeholder="somebody123" v-model="username">
       </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" class="form-control" id="password" placeholder="abc123" v-model="password">
+      <div class="field">
+        <label class="label" for="password">Password</label>
+        <input type="password" class="input" id="password" placeholder="abc123" v-model="password">
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="submit" class="button is-link">Submit</button>
     </form>
     <div>
       <p>...or <RouterLink to="/register">register</RouterLink></p>
