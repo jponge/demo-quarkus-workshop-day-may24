@@ -8,6 +8,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
+import io.vertx.mutiny.ext.web.client.predicate.ResponsePredicate;
 import io.vertx.mutiny.ext.web.codec.BodyCodec;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
@@ -168,13 +169,14 @@ public class DashboardEndpoint {
   Uni<Void> hydrate() {
     return webClient.get(activityServicePort, activityServiceHost, "/ranking/last-24-hours")
       .as(BodyCodec.jsonArray())
+      .expect(ResponsePredicate.SC_OK)
       .send()
-      .onFailure().retry().withBackOff(Duration.ofMillis(500)).atMost(5)
       .onItem().transform(HttpResponse::body)
       .onItem().transformToMulti(array -> Multi.createFrom().iterable(array))
       .onItem().transform(JsonObject.class::cast)
       .onItem().transformToUniAndConcatenate(this::whoOwnsDevice)
       .onItem().transformToUniAndConcatenate(this::fillWithUserProfile)
+      .onFailure().retry().withBackOff(Duration.ofMillis(500), Duration.ofMillis(2000)).atMost(10)
       .onItem().invoke(this::hydrateEntryIfPublic)
       .collect().asList()
       .replaceWithVoid();
@@ -183,6 +185,7 @@ public class DashboardEndpoint {
   Uni<JsonObject> fillWithUserProfile(JsonObject json) {
     return webClient
       .get(userServicePort, userServiceHost, "/" + json.getString("username"))
+      .expect(ResponsePredicate.SC_OK)
       .as(BodyCodec.jsonObject())
       .send()
       .onFailure().retry().withBackOff(Duration.ofMillis(500)).atMost(5)
@@ -194,6 +197,7 @@ public class DashboardEndpoint {
     return webClient
       .get(userServicePort, userServiceHost, "/owns/" + json.getString("deviceId"))
       .as(BodyCodec.jsonObject())
+      .expect(ResponsePredicate.SC_OK)
       .send()
       .onFailure().retry().withBackOff(Duration.ofMillis(500)).atMost(5)
       .map(HttpResponse::body)
