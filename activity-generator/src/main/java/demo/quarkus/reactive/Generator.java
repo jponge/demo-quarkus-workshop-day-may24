@@ -1,6 +1,7 @@
 package demo.quarkus.reactive;
 
 import io.quarkus.logging.Log;
+import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import io.vertx.core.json.Json;
@@ -37,6 +38,7 @@ public class Generator implements QuarkusApplication {
     createProfiles(args);
     generateTraffic();
 
+    Quarkus.waitForExit();
     return 0;
   }
 
