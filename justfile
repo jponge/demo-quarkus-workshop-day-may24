@@ -34,10 +34,13 @@ copy-native:
 clean-native:
   find native-apps -type f -name \*-runner | xargs rm
 
-create-demo-pod:
+create-demo-pod-manually:
   podman pod create --name quarkus-demo-pod -p 5432:5432 -p 9092:9092
   podman run --pod quarkus-demo-pod -dt --name postgres -e POSTGRES_PASSWORD=1234 -e POSTGRES_USER=quarkus docker.io/library/postgres:14
   podman run --pod quarkus-demo-pod -dt --name kafka -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 quay.io/ogunalp/kafka-native:latest
+
+create-demo-pod:
+  podman kube play dev-services.yaml
 
 delete-demo-pod:
   podman pod stop quarkus-demo-pod

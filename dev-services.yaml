@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: quarkus-demo-pod
+  name: quarkus-demo-pod
+spec:
+  containers:
+    - name: postgres
+      image: docker.io/library/postgres:14
+      env:
+        - name: POSTGRES_USER
+          value: quarkus
+        - name: POSTGRES_PASSWORD
+          value: "1234"
+      ports:
+        - containerPort: 5432
+          hostPort: 5432
+    - name: kafka
+      image: quay.io/ogunalp/kafka-native:latest
+      env:
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: PLAINTEXT://localhost:9092
+      ports:
+        - containerPort: 9092
+          hostPort: 9092
