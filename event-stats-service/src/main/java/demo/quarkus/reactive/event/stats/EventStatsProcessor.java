@@ -115,11 +115,10 @@ public class EventStatsProcessor {
   }
 
   private static Message<JsonObject> computeCityTrend(List<Message<JsonObject>> list) {
-    String city = extractCity(list.getFirst().getPayload());
-    long stepsCount = 0;
-    for (Message<JsonObject> entry : list) {
-      stepsCount += entry.getPayload().getLong("stepsCount");
-    }
+    JsonObject first = list.getFirst().getPayload();
+    JsonObject last = list.getLast().getPayload();
+    String city = extractCity(first);
+    long stepsCount = last.getLong("stepsCount") - first.getLong("stepsCount");
     JsonObject payload = new JsonObject()
       .put("timestamp", LocalDateTime.now().toString())
       .put("seconds", 5)

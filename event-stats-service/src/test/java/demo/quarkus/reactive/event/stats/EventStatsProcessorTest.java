@@ -112,7 +112,7 @@ class EventStatsProcessorTest {
   void cityTrendUpdate() {
     companion.produce(JsonObject.class).fromRecords(List.of(
       dailyStepsUpdateRecord("abc", 2500),
-      dailyStepsUpdateRecord("abc", 2500)
+      dailyStepsUpdateRecord("abc", 3500)
     ));
     List<ConsumerRecord<String, JsonObject>> records = companion.consume(JsonObject.class)
       .fromTopics("event-stats.city-trend.updates", 1)
@@ -121,7 +121,7 @@ class EventStatsProcessorTest {
     JsonObject data = records.getFirst().value();
     assertThat(data.getInteger("seconds")).isEqualTo(5);
     assertThat(data.getInteger("updates")).isEqualTo(2);
-    assertThat(data.getLong("stepsCount")).isEqualTo(5000L);
+    assertThat(data.getLong("stepsCount")).isEqualTo(1000L);
     assertThat(data.getString("city")).isEqualTo("Lyon");
   }
 
