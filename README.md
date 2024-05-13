@@ -16,7 +16,7 @@ You will need:
 
 - We recommend Java 21+
 - Native compilation works with a GraalVM distribution such as [Mandrel](https://github.com/graalvm/mandrel)
-- You will need to run containers: [Podman Desktop])(https://podman-desktop.io/) is your friend
+- You will need to run containers: [Podman Desktop](https://podman-desktop.io/) is your friend
 
 We also recommend:
 
