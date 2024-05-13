@@ -16,6 +16,8 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
+import java.time.Duration;
+
 import static java.time.temporal.ChronoUnit.SECONDS;
 
 @ApplicationScoped
