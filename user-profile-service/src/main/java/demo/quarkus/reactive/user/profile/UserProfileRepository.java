@@ -12,17 +12,25 @@ public class UserProfileRepository implements PanacheRepository<UserProfile> {
     if (userProfile.makePublic == null) {
       userProfile.makePublic = Boolean.FALSE;
     }
+    // Persist and flush in one method call
     return persistAndFlush(userProfile);
   }
 
   public Uni<UserProfileFetch> findByUsername(String username) {
-    return find("username", username).project(UserProfileFetch.class).singleResult();
+    // Panache query: select user profiles filtering by username
+    return find("username", username)
+      // Projection class: only the necessary columns will be fetched
+      .project(UserProfileFetch.class)
+      .singleResult();
   }
 
   @WithTransaction
   public Uni<Void> update(String username, UserProfileUpdate update) {
     return find("username", username).singleResult()
-      .onItem().ifNotNull().invoke(entity -> update.applyTo(entity))
+      .onItem().ifNotNull().invoke(entity -> {
+        // Managed entity update
+        update.applyTo(entity);
+      })
       .replaceWithVoid();
   }
 
@@ -32,6 +40,7 @@ public class UserProfileRepository implements PanacheRepository<UserProfile> {
 
   public Uni<Boolean> authenticate(Credentials credentials) {
     return find("username", credentials.username()).singleResult()
+      // Awful, don't persist clear text password in a production database
       .onItem().transform(entity -> entity.password.equals(credentials.password()))
       .onFailure().recoverWithItem(false);
   }
