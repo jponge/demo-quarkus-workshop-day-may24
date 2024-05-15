@@ -1,6 +1,5 @@
 package demo.quarkus.reactive.api;
 
-import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.JWTOptions;
@@ -12,6 +11,7 @@ import io.vertx.mutiny.core.http.HttpClient;
 import io.vertx.mutiny.ext.auth.jwt.JWTAuth;
 import io.vertx.mutiny.ext.web.Router;
 import io.vertx.mutiny.ext.web.RoutingContext;
+import io.vertx.mutiny.ext.web.client.HttpRequest;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
 import io.vertx.mutiny.ext.web.client.predicate.ResponsePredicate;
@@ -34,6 +34,7 @@ public class PublicApiRoutes {
   @Inject
   Logger logger;
 
+  // Inject Vert.x instance managed by Quarkus
   @Inject
   Vertx vertx;
 
@@ -67,9 +68,11 @@ public class PublicApiRoutes {
         .setAlgorithm("RS256")
         .setBuffer(cryptoHelper.privateKey())));
 
+    // Create an HTTP client
     httpClient = vertx.createHttpClient();
-    userProfileProxy = ProxyHandler.create(HttpProxy.reverseProxy(httpClient).origin(userServicePort, userServiceHost));
+    // Create a WebClient wrapping the HTTP Client
     webClient = WebClient.wrap(httpClient);
+    userProfileProxy = ProxyHandler.create(HttpProxy.reverseProxy(httpClient).origin(userServicePort, userServiceHost));
   }
 
   public void init(@Observes Router router) {
@@ -161,8 +164,11 @@ public class PublicApiRoutes {
     JsonObject payload = rc.body().asJsonObject();
     String username = payload.getString("username");
 
+    // POST request to the user profile service
     webClient.post(userServicePort, userServiceHost, "/authenticate")
+      // Expect success (non-successful codes will be reported as exceptions)
       .expect(ResponsePredicate.SC_SUCCESS)
+      // JsonObject payload (sets the content-type header)
       .sendJsonObject(payload)
       .replaceWithVoid()
       .onItem().transformToUni(v -> fetchDeviceId(username))
@@ -174,9 +180,11 @@ public class PublicApiRoutes {
   }
 
   private Uni<String> fetchDeviceId(String username) {
-    return webClient.get(userServicePort, userServiceHost, "/" + username)
-      .expect(ResponsePredicate.SC_OK)
-      .as(BodyCodec.jsonObject())
+    HttpRequest<Buffer> get = webClient.get(userServicePort, userServiceHost, "/" + username)
+      .expect(ResponsePredicate.SC_OK);
+    // Automatic decoding to JsonObject
+    HttpRequest<JsonObject> getAsJson = get.as(BodyCodec.jsonObject());
+    return getAsJson
       .send()
       .onItem().transform(resp -> resp.body().getString("deviceId"));
   }
