@@ -16,6 +16,8 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/ranking")
 public class RankingResource {
 
+  // Inject PgPool managed by the reactive-pg-client extension
+  // Configured in application properties (and other sources)
   @Inject
   PgPool pgPool;
 
@@ -25,13 +27,17 @@ public class RankingResource {
   public Uni<JsonArray> ranking() {
     Log.info("Ranking query");
 
+    // No ceremony: execute the query on any free connection in the pool
+    // Prepared queries can be cached for performance
     return pgPool.preparedQuery(SqlQueries.rankingLast24Hours())
       .execute()
       .onItem().transform(RankingResource::sendRanking);
   }
 
+  // RowSet contains all the data returned by the DB
   private static JsonArray sendRanking(RowSet<Row> rs) {
     JsonArray data = new JsonArray();
+    // Iterate over the RowSet to build the response
     for (Row row : rs) {
       data.add(new JsonObject()
         .put("deviceId", row.getValue("device_id"))
